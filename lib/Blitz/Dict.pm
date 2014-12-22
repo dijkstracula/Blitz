@@ -47,12 +47,7 @@ sub to_triple {
 =cut
 sub dict_read {
     my $dict_path = shift || "data/words.db";
-
-    if (-e $dict_path) {
-        retrieve($dict_path);
-    } else {
-        [];
-    }
+    retrieve($dict_path);
 }
 
 =head2 dict_add(dict, triples)
