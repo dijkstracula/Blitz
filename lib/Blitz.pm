@@ -6,6 +6,8 @@ use strict;
 use Data::Dumper;
 use Blitz::Dict;
 
+use vars '$VERSION'; $VERSION = '0.0.1';
+
 =head1 NAME
 
 Blitz - German flash card generator dictionary routines

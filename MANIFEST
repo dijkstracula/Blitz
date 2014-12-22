@@ -1,9 +1,4 @@
 MANIFEST
 README
-LICENSE
-Todo
-Changes
-Makefile.PL
 lib/Blitz.pm
 lib/Blitz/Dict.pm
-t/001_load.t
