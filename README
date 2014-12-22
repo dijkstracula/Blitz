@@ -1,45 +1,15 @@
-App-Blitz version 0.0.1
+pod2text Blitz.pm > README
 
-[ REPLACE THIS...
+If this is still here it means the programmer was too lazy to create the readme file.
 
-  The README is used to introduce the module and provide instructions on
-  how to install the module, any machine dependencies it may have (for
-  example C compilers and installed libraries) and any other information
-  that should be understood before the module is installed.
+You can create it now by using the command shown above from this directory.
 
-  A README file is required for CPAN modules since CPAN extracts the
-  README file from a module distribution so that people browsing the
-  archive can use it get an idea of the modules uses. It is usually a
-  good idea to provide version information here so that people can
-  decide whether fixes for the module are worth downloading.
-]
+At the very least you should be able to use this set of instructions
+to install the module...
 
+perl Makefile.PL
+make
+make test
+make install
 
-INSTALLATION
-
-To install this module, run the following commands:
-
-	perl Makefile.PL
-	make
-	make test
-	make install
-
-Alternatively, to install with Module::Build, you can use the following commands:
-
-	perl Build.PL
-	./Build
-	./Build test
-	./Build install
-
-
-DEPENDENCIES
-
-None.
-
-
-COPYRIGHT AND LICENCE
-
-Copyright (C) 2014, Nathan Taylor
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+If you are on a windows box you should use 'nmake' rather than 'make'.
