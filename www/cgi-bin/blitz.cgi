@@ -24,7 +24,7 @@ sub url_format {
 my $dict = Blitz::Dict::dict_read("data/words.db");
 my $trans = @$dict[rand scalar(@$dict)];
 
-print $q->header(-type=>'text/html', -expires=>'+0d');
+print $q->header(-type=>'text/html', -expires=>'+0d', -charset=>'utf-8');
 print $q->start_html("Blitz!");
 
 print $q->center(
