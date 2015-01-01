@@ -30,7 +30,9 @@ print $q->start_html("Blitz!");
 print $q->center(
 	$q->h1($trans->{"en"}),
 	$q->br,
-	$q->h1(url_format($trans->{"de"}))
+	$q->h1(
+		$trans->{root} . ": ", 
+		url_format($trans->{"de"}))
 );
 print $q->end_html;
 

@@ -84,7 +84,8 @@ sub words_from_file {
 
     close(IFILE);
 
-    keys %words;
+	my @keys = keys %words;
+    \@keys;
 }
 
 =head2 update_dict(words)
@@ -95,7 +96,8 @@ sub update_dictfile {
 
 	my $dict = dict_read();
 	my $word_cnt = 0;
-	for my $word (@words) {
+	print "Adding " . ((scalar @$words) + 1) . " new words.\n";
+	for my $word (@$words) {
 		print "Adding " . $word . "...\n";
 	
 		my $translation = leo_translate($word);
@@ -103,6 +105,8 @@ sub update_dictfile {
 		$word_cnt += dict_add($dict, $translation);	
 	}
 
-	print "Added " . $word_cnt . " new words.\n";
+	print "Added " . $word_cnt . " new translations.\n";
 	dict_write($dict);
 }
+
+update_dictfile(words_from_file("../data/phrases"));
