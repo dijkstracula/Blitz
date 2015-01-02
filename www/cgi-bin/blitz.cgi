@@ -14,8 +14,7 @@ sub url_format {
     my @urls = ();
 
     foreach my $word (split /\s+/, $words) {
-        my $sterm = $word;
-        $sterm =~ s/[#\-%&\$*+()]//g;
+        my $sterm = $word; $sterm =~ s/[#\-%&\$*+()]//g;
         push @urls, $q->a({-href => 'https://dict.leo.org/#/search=' . $sterm}, $word);
     }
     join " ", @urls;
@@ -38,22 +37,22 @@ sub stem_format {
     my ($word, $roots) = @_;
     my $stems = Blitz::Dict::stem($word, $roots);
 
-	if ((scalar (split /\W+/, $word) > 1) or (scalar @$stems) <= 1) {
-		return;
-	}
+    if ((scalar (split /\W+/, $word) > 1) or (scalar @$stems) <= 1) {
+        $q->i("Beats me!  Ask Nathan to add more words to the dictionary.");
+    } else {
+        $q->table(
+            map { 
+                my $row = $_;
 
-	$q->table(
-		map { 
-			my $row = $_;
-
-			$q->Tr(
-				map {
-					my $entry = $_;
-					$q->td($entry);
-				} @$row
-			);
-		} @$stems,
-	);
+                $q->Tr(
+                    map {
+                        my $entry = $_;
+                        $q->td(url_format($entry));
+                    } @$row
+                );
+            } @$stems,
+        );
+    }
 } 
 my $dict = Blitz::Dict::dict_read("data/words.db");
 my $trans = @$dict[rand scalar(@$dict)];
@@ -61,12 +60,13 @@ my $trans = @$dict[rand scalar(@$dict)];
 print $q->header(-type=>'text/html', -expires=>'+0d', -charset=>'utf-8');
 print $q->start_html("Blitz!");
 print $q->center(
-    $q->h1("Translation"),
+    $q->h1($trans->{"root"}),
     $q->br,
     $q->h2($trans->{"en"}),
-    $q->br,
     $q->h2(url_format($trans->{"de"}))
 );
+
+print $q->hr;
 
 print $q->center(
     $q->b("Possible stemmings of root word \"" . $trans->{"root"} . "\":"),
