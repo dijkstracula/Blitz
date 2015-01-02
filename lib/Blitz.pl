@@ -109,4 +109,4 @@ sub update_dictfile {
     dict_write($dict);
 }
 
-update_dictfile(words_from_file("../data/phrases2"));
+update_dictfile(words_from_file("../data/phrases"));
