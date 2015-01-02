@@ -11,8 +11,9 @@ use WWW::Dict::Leo::Org;
 
 use base 'Exporter';
 
-our @EXPORT = qw(dict_read dict_write dict_add leo_translate);
+our @EXPORT = qw(dict_read dict_write dict_add leo_translate stem);
 
+my @suffixes = qw(en er es haft heit ig igen keit lich ologie sch schaft ung);
 
 =head2 munge_defns
     Simplify the structure returned from Dict::Leo to only have the
@@ -125,8 +126,9 @@ sub stem {
     my @letters = split //, $word;
     my @stems = ();
 
-
-    if (any {lc($word) eq lc($_)} @$dict) {
+    # Exact match and suffix-match
+    if ((any {lc($word) eq lc($_)} @$dict) or
+        (any {lc($word) eq lc($_)} @suffixes)) {
         push @stems, [$word];
     }
 
@@ -145,21 +147,9 @@ sub stem {
         }
     }
 
+	@stems = sort { scalar($a) <=> scalar($b) } @stems;
     \@stems;
 }
-
-#$Data::Dumper::Indent = 0;       # turn off all pretty print
-#my $dict = dict_read("../data/words.db");
-#my @roots;
-#
-#for my $defn (@$dict) {
-#    for my $word (split /\s+/, $defn->{de}) {
-#        push @roots, $word;
-#    }
-#}
-#my %hash = map {$_, 1} @roots;
-#@roots = keys %hash;
-#print Dumper(stem("einstein", \@roots));
 
 1; # Magic true value required at end of module
 __END__
