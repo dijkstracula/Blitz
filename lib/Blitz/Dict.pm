@@ -13,7 +13,6 @@ use base 'Exporter';
 
 our @EXPORT = qw(dict_read dict_write dict_add leo_translate);
 
-my $leo = new WWW::Dict::Leo::Org();
 
 =head2 munge_defns
     Simplify the structure returned from Dict::Leo to only have the
@@ -23,17 +22,17 @@ sub munge_defns {
     my ($word, $categories) = @_;
     my @defns = ();
 
-	# Basic forms will have the form: Mögliche Grundformen für das Wort "<infinitive>"
-	my @roots = grep $_->{title} =~ /Grundformen/, @$categories;
-	my $root = $roots[0]->{data}[0]{right} || $word;
+    # Basic forms will have the title: Mögliche Grundformen für das Wort "<infinitive>"
+    my @roots = grep $_->{title} =~ /Grundformen/, @$categories;
+    my $root = $roots[0]->{data}[0]{right} || $word;
 
     foreach my $cat (@$categories) {
-       	next if $cat->{title} =~ /Grundformen/;
+           next if $cat->{title} =~ /Grundformen/;
 
         my @translations = @{$cat->{data}};
         foreach my $tr (@translations) {
             my $obj = {
-            	root => $root,
+                root => $root,
                 type => $cat->{title},
                 en   => $tr->{left},
                 de   => $tr->{right}
@@ -53,10 +52,10 @@ sub dict_read {
     my $dict_path = shift || "../data/words.db";
 
     if (-e $dict_path) {
-	    retrieve($dict_path);
-	} else {
-		[];
-	}
+        retrieve($dict_path);
+    } else {
+        [];
+    }
 }
 
 =head2 dict_add(dict, triples)
@@ -101,43 +100,66 @@ sub dict_write {
 sub leo_translate {
     my $word = shift;
 
-    my $triple = eval {
+    my $defns = eval {
+        my $leo = new WWW::Dict::Leo::Org();
         my @leo_result = $leo->translate($word);
         munge_defns($word, \@leo_result);
     };
     if ($@) {
-        warn "Got error back from Leo: " . $@ . "\n";
-        undef;
+        warn "Got error back from Leo: $@";
     }
-    $triple;
+    $defns;
 }
 
 =head2 stem(word)
-	Attempt to stem a word with a given dictionary.  Returns an array of 
-	arrays of stems.
+    Attempt to stem a word with a given dictionary.  Returns an arrayref of
+    arrays of stems.
+
+    TODO: should match $l against a common set of suffixes if $r is empty.
+
+    E.g. "Ausländer" => [ ["Ausländer"], ["Aus", "länder"] ]
 =cut
 sub stem {
-	my ($word, $dict) = shift;
+    my ($word, $dict) = @_;
 
-	my @letters = split //, $word;
-	my @stems = ();
+    my @letters = split //, $word;
+    my @stems = ();
 
-	for my $i (1 .. $#letters - 1) {
-		my $l = join "", @letters[0..$i];
-		my $r = join "", @letters[$i+1..$#letters];
 
-		if (exists $dict->{$l}) {
-			print "$l-\n";
-			push(@stems, stem($r));
-		}
-	}
+    if (any {lc($word) eq lc($_)} @$dict) {
+        push @stems, [$word];
+    }
 
-	@stems;
+    for my $i (0 .. $#letters - 1) {
+        my $l = join "", @letters[0..$i];
+        my $r = join "", @letters[$i+1..$#letters];
+
+        if (any {lc($l) eq lc($_)} @$dict) {
+            my $suffixes = stem($r, $dict);
+            return [] if scalar($suffixes) == 0;
+
+            for my $suffix (@$suffixes) {
+                unshift @$suffix, $l;
+                push @stems, $suffix;
+            }
+        }
+    }
+
+    \@stems;
 }
 
-my $dict = dict_read("data/words.db");
-my @roots = map $_->{de}, @$dict;
+#$Data::Dumper::Indent = 0;       # turn off all pretty print
+#my $dict = dict_read("../data/words.db");
+#my @roots;
+#
+#for my $defn (@$dict) {
+#    for my $word (split /\s+/, $defn->{de}) {
+#        push @roots, $word;
+#    }
+#}
+#my %hash = map {$_, 1} @roots;
+#@roots = keys %hash;
+#print Dumper(stem("einstein", \@roots));
 
-stem("einstein", $dict);
 1; # Magic true value required at end of module
 __END__

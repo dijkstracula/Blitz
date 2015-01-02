@@ -27,7 +27,7 @@ Nathan Taylor  C<< <nbtaylor@gmail.com> >>
     dict_write($db);
 
 =head1 DESCRIPTION
-    
+
     TODO
 
 
@@ -84,29 +84,29 @@ sub words_from_file {
 
     close(IFILE);
 
-	my @keys = keys %words;
+    my @keys = keys %words;
     \@keys;
 }
 
 =head2 update_dict(words)
-	Updates the dictionary file with the supplied words.
+    Updates the dictionary file with the supplied words.
 =cut
 sub update_dictfile {
-	my $words = shift;
+    my $words = shift;
 
-	my $dict = dict_read();
-	my $word_cnt = 0;
-	print "Adding " . ((scalar @$words) + 1) . " new words.\n";
-	for my $word (@$words) {
-		print "Adding " . $word . "...\n";
-	
-		my $translation = leo_translate($word);
-		next unless defined($translation); #undef if leo returned HTTP != 200
-		$word_cnt += dict_add($dict, $translation);	
-	}
+    my $dict = dict_read();
+    my $word_cnt = 0;
+    print "Adding " . (scalar @$words) . " new words.\n";
+    for my $word (@$words) {
+        print "Adding $word...\n";
 
-	print "Added " . $word_cnt . " new translations.\n";
-	dict_write($dict);
+        my $translation = leo_translate($word);
+        next unless defined($translation); #undef if leo returned HTTP != 200
+        $word_cnt += dict_add($dict, $translation);
+    }
+
+    print "Added $word_cnt new translations.\n";
+    dict_write($dict);
 }
 
-update_dictfile(words_from_file("../data/phrases"));
+update_dictfile(words_from_file("../data/phrases2"));
